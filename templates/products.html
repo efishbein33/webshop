@@ -14,23 +14,18 @@
   <h1 class="text-center">Webshop's Pet Products</h1>
 </div>
 
-
 <main class="container my-4">
 	<h3 class="my-4 border-bottom pb-1"></h3>
 	<div class="row">
       {% for product in products %}
-        
-      
-      <div class="col-md-4 mb-4">
-        <table>
-              <tr><input type="hidden" class="id" value={{product.id}}></tr>
+      <div class="col-md-4 mb-4 tables">
+        <table class="table mt-3 sortable"></table>
               <tr><img src="{{ product.image.url }}" class="image-responsive"></tr>
               <tr><a href="{% url 'product_detail' product.id %}"><h5 class="card-title">{{ product.name }}</h5></a></tr>
               <tr><p class="card-text">Item: {{ product.code }}</p></tr>
-              <tr><p class="price" value="{{ product.price }}">${{ product.price }}</p></tr>
+              <tr>${{ product.price }}</tr>
               <div class="input-group my-3" style="width:30%;">
-                <tr><p><input type="number" class="qty" value=""></p></tr>
-                <tr><button class="btn btn-primary btn-sm addToCartBtn" type="button"><i class="fa fa-shopping-cart"></i> Add to Cart</button></tr>
+                <tr><button data-product_id={{product.id}} data-qty="1" onclick="addToCart(this)" type="button" class="btn btn-primary btn-sm addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button></tr>
               </div>
           </table>
         </div>
@@ -41,42 +36,39 @@
 
 
 
-<!-- Add To Cart -->
+<!-- Add To Cart  -->
 
 <script>
- 
-$(document).ready(function () {
-  $(document).on('click',".addToCartBtn", function(){
-      var qty=$('.qty').val();
-      var id=$('.id').val();
-      var price=$('.price').val();
-      console.log(qty, id, price)
 
+function addToCart(button) {
+        const product_id = button.dataset.product_id
+        const qty = button.dataset.qty
   
+  
+          $.ajax({
+            url: "/add_to_cart/",
+            data: {
+              "product_id": product_id,
+              "qty": qty,
+            },
+            dataType: 'json',
     
-  
-  
-        $.ajax({
-          url: "/add_to_cart/",
-          data: {
-            "id": id,
-            "qty": qty,
-            "price": price,
-          },
-          dataType: 'json',
-  
-          success:function(res){
-                  $(".cart-list").text(res.totalitems);
-          },
-  
-          error:function(){
-            console.log('fail')
-          }
-  
-        });
-  });
-  })
-</script> 
+            success:function(res){
+                    $(".cart-list").text(res.totalitems);
+            },
+    
+            error:function(){
+              console.log('fail')
+            }
+    
+          });
+        };
+
+
+</script>
+
+
+
 
 
 {% endblock %}

@@ -1,67 +1,77 @@
 {% extends 'base.html' %}
+
 {% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/sort.css' %}">
+
 {% block content %}
 <main class="container my-4">
 	<!-- Search Products -->
 	<h3 class="my-4 border-bottom pb-1"><span class="text-muted">Search result for</span> {{request.GET.q}}</h3>
-	<div class="row">
-    {% for product in data %}
-    <div class="col-md-4 mb-4">
-      <div class="table">
-          <div class="table">
-            <a href="{% url 'product_detail' product.id %}"><h5 class="card-title">{{ product.name }}</h5></a>
-            <img src="{{ product.image.url }}" class="image-responsive">
-            <p class="card-text">Item: {{ product.code }}</p>
-            <p class="price">${{ product.price }}</p>
-            
-            <div class="input-group my-3" style="width:30%;">
-              <input type="number" class="form-control" id="qty" value="">
-              <div class="input-group-append"></div>
-                <input type="hidden" class="id" value="{{ product.id }}">
-                <input type="hidden" class="price" value="{{ product.price }}">
-                  <button class="btn btn-primary btn-sm" type="button" id="addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+	<div class="row justify-content-center">
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+    <table class="table table-striped sortable">
+      <thead id="thead">
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Item #</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        {% for product in data %}         
+          <div class="col-md-4 mb-4">
+              <tr>
+                  <td><img src="{{ product.image.url }}" class="image-responsive"></td>
+                  <td><a href="{% url 'product_detail' product.id %}"><h5 class="card-title">{{ product.name }}</h5></a></td>
+                  <td><p class="card-text">Item: {{ product.code }}</p></td>
+                  <td><p>${{ product.price }}</p></td>
+                  <td><div class="input-group my-3" style="width:30%;"></td>
+                    <td><button data-product_id={{product.id}} data-product_name={{product.name}} data-price={{product.price}} data-qty="1" onclick="addToCart(this)" type="button" class="btn btn-primary btn-sm addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button></td>
+                  <td></div>
+              </tr>
             </div>
-          </div>
+          {% endfor %}
+        </tbody>
+      </table>
         </div>
       </div>
-    {% endfor %}
-</div>
-</main>
+    </main>
 
 
 
-<!-- Add To Cart -->
+<!-- Add To Cart  -->
 <script>
-$(document).ready(function () {
-$(document).on('click', "#addToCartBtn",function(e){
-    e.preventDefault();
-    var qty=$('#qty').val();
-    var id=$('.id').val();
-    var price=$('.price').val();
-    console.log(qty, id, price)
+
+  function addToCart(button) {
+    const product_id = button.dataset.product_id
+    const product_name = button.dataset.product_name
+    const price = button.dataset.price
+    const qty = button.dataset.qty 
+
+    console.log(product_id, product_name, price, qty)
 
 
+      $.ajax({
+        url: "/add_to_cart/",
+        data: {
+          "product_id": product_id,
+          "product_name": product_name,
+          "qty": qty,
+          "price": price,
+        },
+        dataType: 'json',
 
+        success:function(res){
+                $(".cart-list").text(res.totalitems);
+        },
 
-    $.ajax({
-      url: "/add_to_cart/",
-      data: {
-        "id": id,
-        "qty": qty,
-        "price": price,
-      },
-      dataType: 'json',
+        error:function(){
+          console.log('fail')
+        }
 
-      success:function(res){
-              $(".cart-list").text(res.totalitems);
-      },
-
-      error:function(){
-        console.log('fail')
-      }
-
-    });
-});
-}) 
+      });
+    };
 </script>
+
 {% endblock %}
