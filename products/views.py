@@ -3,14 +3,11 @@ from .models import *
 from django.http import HttpResponse, JsonResponse
 import requests
 from django.db.models import Q
-from django.template.loader import render_to_string
 
 
 
 def products(request):
     ''' display all products on products page '''
-    if request.GET.get('name'):
-        pass
     products = Product.objects.all()
     context = {'products': products}
     return render(request, 'products.html', context)
@@ -24,12 +21,14 @@ def product_detail(request, id):
 
 
 def add_to_cart(request):
-    print(request.GET.get('id'))
+    ''' function to handle the add to cart data using django sessions '''
     cart={}
     cart[str(request.GET['id'])]={
+        'id': request.GET['id'],
         'price': request.GET['price'],
         'qty': request.GET['qty'],
     }
+    print(cart)
     if 'cart' in request.session:
         if str(request.GET['id']) in request.session['cart']:
             cart_data=request.session['cart']
@@ -47,6 +46,7 @@ def add_to_cart(request):
 
 
 def search(request):
+    ''' handle the search bar for both name and product code '''
     q=request.GET['q']
     data=Product.objects.filter(Q(name__icontains=q) | Q(code__icontains=q))
     return render(request, 'search.html', {'data': data})
