@@ -1,8 +1,8 @@
 # Provet Webshop Trial Work
-To properly set up the project and use it on your local please follow the following steps.
+Set up Trial Project
 
 ## Initial Set up
-Make sure to go to directory provet_cloud
+Make sure to go to directory provet_cloud to activate the virtualenv
 
 ```bash
 source webshop_venv/bin/activate
@@ -35,5 +35,5 @@ The last command will walk you through the superuser account setup. After the ac
 python manage.py runserver
 ```
 
-Create new products through the admin page at 127.0.0.1:8000/admin/
+To create more products do it through the admin page at 127.0.0.1:8000/admin/
 
