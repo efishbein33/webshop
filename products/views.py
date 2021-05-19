@@ -14,29 +14,22 @@ def products(request):
 
 
 def product_detail(request, id):
-    ''' detailed description of selected product '''
+    ''' detailed product page  '''
     products = Product.objects.filter(id=id)
     context = {'data': products}
     return render(request, 'detail/product-detail.html', context)
 
 
 def add_to_cart(request):
-    ''' function to handle the add to cart data using django sessions '''
-    cart={}
-    cart[str(request.GET['product_id'])]={
-        'product_id': request.GET['product_id'],
-        'qty': request.GET['qty'],
-    }
+    ''' Using django session's to add items to shopping cart '''
+    product_id = request.GET['product_id']
+    cart = [product_id]
+    print('test', cart)
+
     if 'cartdata' in request.session:
-        if str(request.GET['product_id']) in request.session['cartdata']:
-            cart_data=request.session['cartdata']
-            cart_data[str(request.GET['product_id'])]['qty']=int(cart[str(request.GET['product_id'])]['qty'])
-            cart_data.update(cart_data)
-            request.session['cartdata']=cart_data
-        else:
-            cart_data=request.session['cartdata']
-            cart_data.update(cart)
-            request.session['cartdata']=cart_data
+        cart_data=request.session['cartdata']
+        cart_data.append(cart)
+        request.session['cartdata']=cart_data
     else:
         request.session['cartdata']=cart
     return JsonResponse({'data':request.session['cartdata'],'totalitems':len(request.session['cartdata'])})

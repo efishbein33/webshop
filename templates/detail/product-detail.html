@@ -23,7 +23,7 @@
           <tr><p class="card-text">Item: {{ product.code }}</p></tr>
           <tr>${{ product.price }}</tr>
           <div class="input-group my-3" style="width:30%;">
-            <tr><button data-product_id={{product.id}} data-product_name={{product.name}} data-price={{product.price}} data-qty="1" onclick="addToCart(this)" type="button" class="btn btn-primary btn-sm addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button></tr>
+            <tr><button data-product_id={{product.id}} onclick="addToCart(this)" type="button" class="btn btn-primary btn-sm addToCartBtn"><i class="fa fa-shopping-cart"></i> Add to Cart</button></tr>
           </div>
       </table>
     </div>
@@ -38,30 +38,17 @@
 
   function addToCart(button) {
     const product_id = button.dataset.product_id
-    const product_name = button.dataset.product_name
-    const price = button.dataset.price
-    const qty = button.dataset.qty 
-
-    console.log(product_id, product_name, price, qty)
-
 
       $.ajax({
         url: "/add_to_cart/",
         data: {
           "product_id": product_id,
-          "product_name": product_name,
-          "qty": qty,
-          "price": price,
         },
         dataType: 'json',
 
         success:function(res){
                 $(".cart-list").text(res.totalitems);
         },
-
-        error:function(){
-          console.log('fail')
-        }
 
       });
     };
