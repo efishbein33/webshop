@@ -24,7 +24,6 @@ def add_to_cart(request):
     ''' Using django session's to add items to shopping cart '''
     product_id = request.GET['product_id']
     cart = [product_id]
-    print('test', cart)
 
     if 'cartdata' in request.session:
         cart_data=request.session['cartdata']
